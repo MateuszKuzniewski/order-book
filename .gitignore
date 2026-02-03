@@ -21,3 +21,4 @@ build/
 # Clangd
 /.clangd/
 .clangd/
+.clangd
