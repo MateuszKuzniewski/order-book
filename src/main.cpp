@@ -1,6 +1,7 @@
 #include <deque>
 #include <iostream>
 #include <map>
+#include <vector>
 //-------------------
 #include "types.h"
 
@@ -11,56 +12,94 @@ enum class Side : u8
     SELL
 };
 
-struct Order 
+struct Order
 {
     u64 price;
-    u32 id;
-    u32 quantity;
+    u64 quantity;
+    Side side;
 };
 
 struct OrderBook
 {
     // maps price to a list of orders
     // structure: price, order, sort-by less/more
-    std::map<u64, std::deque<Order>, std::greater<i64>> bidBook;
-    std::map<u64, std::deque<Order>, std::less<i64>> askBook;
+    std::map<u64, std::deque<Order>, std::greater<u64>> bidBook;
+    std::map<u64, std::deque<Order>, std::less<u64>> askBook;
 };
 
-void AddOrder(OrderBook& orderBook, const Order& order, Side side)
+void AddOrders(OrderBook& orderBook, const std::vector<Order>& orders)
 {
-    if (order.quantity > 0)
+    for (const auto& order : orders)
     {
-        switch (side)
+        if (order.quantity == 0)
         {
-            case Side::BUY:  orderBook.bidBook[order.price].push_back(order); break;
-            case Side::SELL: orderBook.askBook[order.price].push_back(order); break;
-            default: std::cout << "cannot add order\n"; break;
+            std::cout << "couldn't add an order" << std::endl;
+            continue;
         }
+
+        if (order.side == Side::BUY)
+        {
+            orderBook.bidBook[order.price].emplace_back(order);
+        }
+        else 
+        {
+            orderBook.askBook[order.price].emplace_back(order);     
+        }
+    }
+};
+
+bool CanMatch(OrderBook& orderBook, const u64 price, Side side)
+{
+    const auto& bids = orderBook.bidBook;
+    const auto& asks = orderBook.askBook;
+    
+    if (bids.empty() || asks.empty())
+    {
+        return false;
+    }
+
+    if (side == Side::BUY)
+    {
+        const auto& [bestAsk, _] = *asks.begin();
+        return price >= bestAsk;
     }
     else
     {
-        std::cout << "cannot add order with 0 quantity\n";
+        const auto& [bestBid, _] = *bids.begin();
+        return price <= bestBid;
     }
 };
 
-u64 FindMatch(OrderBook& orderBook)
+u32 MatchOrders(OrderBook& orderBook, std::vector<Order>& orders)
 {
+    for (const auto& order : orders)
+    {
+        if (!CanMatch(orderBook, order.price, order.side))
+        {
+            std::cout << "No Matches found" << std::endl;
+            break;
+        }
+    }
+
     return 0;
 };
 
-void MatchOrders();
-void CancelOrder();
-void ExecuteOrder();
+// void CancelOrder();
+// void ExecuteOrder();
 
 OrderBook Setup()
 {
     OrderBook orderBook;
-
-    AddOrder(orderBook, {120 ,1, 5},  Side::BUY);
-    AddOrder(orderBook, {125, 1, 10}, Side::BUY);
-    AddOrder(orderBook, {120, 1, 15}, Side::SELL);
-    AddOrder(orderBook, {125, 1, 20}, Side::SELL);
-    AddOrder(orderBook, {150, 1, 30}, Side::BUY);
+    
+    std::vector<Order> orders;
+    orders.reserve(6);
+    orders.push_back({ 120, 5,  Side::BUY  });
+    orders.push_back({ 125, 10, Side::BUY  });
+    orders.push_back({ 120, 15, Side::SELL });
+    orders.push_back({ 125, 20, Side::SELL });
+    orders.push_back({ 150, 30, Side::BUY  });
+    
+    AddOrders(orderBook, orders);
 
     return orderBook;
 };
@@ -69,30 +108,43 @@ void PrintDeque(const std::deque<Order>& d)
 {
     for (auto n : d)
     {
-        std::cout << "id: " << n.id << " quantity: " << n.quantity << std::endl;
+        std::cout << " quantity: " << n.quantity << std::endl;
     }
 };
+
+void PrintMap(const std::map<u64, std::deque<Order>, std::greater<u64>>map, const std::string& text)
+{
+    std::cout << text << "\n\n";
+    for (auto it = map.begin(); it != map.end(); ++it)
+    {
+        const auto& [price, queue] = *it;
+        std::cout << "price: " << price << " Order: "; 
+        PrintDeque(queue);
+    } 
+    std::cout << "\n";
+};
+
+void PrintMap(const std::map<u64, std::deque<Order>, std::less<u64>>map, const std::string& text)
+{
+    std::cout << text << "\n\n";
+    for (auto it = map.begin(); it != map.end(); ++it)
+    {
+        const auto& [price, queue] = *it;
+        std::cout << "price: " << price << " Order: "; 
+        PrintDeque(queue);
+    } 
+    std::cout << "\n";
+};
+
 
 
 int main()
 {
     OrderBook ob = Setup();
+    
+    PrintMap(ob.askBook, "BUY ORDERS: ");
+    PrintMap(ob.bidBook, "SELL ORDERS: ");
 
-
-    std::cout << "SELL ORDERS: \n\n";
-    for (auto it = ob.askBook.begin(); it != ob.askBook.end(); ++it)
-    {
-        auto index = *it;
-        std::cout << "price: " << index.first << " Order: "; 
-        PrintDeque(index.second);
-    }
-
-    std::cout << "\nBUY ORDERS: \n\n";
-    for (auto it = ob.bidBook.begin(); it != ob.bidBook.end(); ++it)
-    {
-        auto index = *it;
-        std::cout << "price: " << index.first << " Order: "; 
-        PrintDeque(index.second);
-    }
+    std::cout << CanMatch(ob, 0, Side::BUY) << std::endl;
     return 0;
 }
