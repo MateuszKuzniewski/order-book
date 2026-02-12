@@ -1,31 +1,10 @@
-#include <deque>
 #include <iostream>
-#include <map>
 #include <vector>
 //-------------------
 #include "types.h"
+#include "orderbook.h"
+#include "utility.h"
 
-
-enum class Side : u8
-{
-    BUY,
-    SELL
-};
-
-struct Order
-{
-    u64 price;
-    u64 quantity;
-    Side side;
-};
-
-struct OrderBook
-{
-    // maps price to a list of orders
-    // structure: price, order, sort-by less/more
-    std::map<u64, std::deque<Order>, std::greater<u64>> bidBook;
-    std::map<u64, std::deque<Order>, std::less<u64>> askBook;
-};
 
 void AddOrders(OrderBook& orderBook, const std::vector<Order>& orders)
 {
@@ -94,48 +73,15 @@ OrderBook Setup()
     std::vector<Order> orders;
     orders.reserve(6);
     orders.push_back({ 120, 5,  Side::BUY  });
-    orders.push_back({ 125, 10, Side::BUY  });
+    orders.push_back({ 120, 10, Side::BUY  });
     orders.push_back({ 120, 15, Side::SELL });
-    orders.push_back({ 125, 20, Side::SELL });
-    orders.push_back({ 150, 30, Side::BUY  });
+    orders.push_back({ 120, 20, Side::SELL });
+    orders.push_back({ 120, 30, Side::BUY  });
     
     AddOrders(orderBook, orders);
 
     return orderBook;
 };
-
-void PrintDeque(const std::deque<Order>& d)
-{
-    for (auto n : d)
-    {
-        std::cout << " quantity: " << n.quantity << std::endl;
-    }
-};
-
-void PrintMap(const std::map<u64, std::deque<Order>, std::greater<u64>>map, const std::string& text)
-{
-    std::cout << text << "\n\n";
-    for (auto it = map.begin(); it != map.end(); ++it)
-    {
-        const auto& [price, queue] = *it;
-        std::cout << "price: " << price << " Order: "; 
-        PrintDeque(queue);
-    } 
-    std::cout << "\n";
-};
-
-void PrintMap(const std::map<u64, std::deque<Order>, std::less<u64>>map, const std::string& text)
-{
-    std::cout << text << "\n\n";
-    for (auto it = map.begin(); it != map.end(); ++it)
-    {
-        const auto& [price, queue] = *it;
-        std::cout << "price: " << price << " Order: "; 
-        PrintDeque(queue);
-    } 
-    std::cout << "\n";
-};
-
 
 
 int main()
