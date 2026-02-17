@@ -13,15 +13,16 @@ enum class Side : u8
 
 struct Order
 {
-    u64 price;
-    u64 quantity;
+    u32 price;
+    u32 quantity;
     Side side;
 };
 
+// mapping: price, list of orders for that price
+typedef std::map<u32, std::deque<Order>> OrderMap;
+
 struct OrderBook
 {
-    // maps price to a list of orders
-    // structure: price, order, sort-by less/more
-    std::map<u64, std::deque<Order>, std::greater<u64>> bidBook;
-    std::map<u64, std::deque<Order>, std::less<u64>> askBook;
+    OrderMap bidBook;
+    OrderMap askBook;
 };
