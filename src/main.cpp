@@ -114,11 +114,11 @@ OrderBook Setup()
     
     std::vector<Order> orders;
     orders.reserve(6);
-    orders.push_back({ 120, 5,  Side::BUY  });
-    orders.push_back({ 120, 10, Side::BUY  });
-    orders.push_back({ 120, 15, Side::SELL });
-    orders.push_back({ 120, 20, Side::SELL });
-    orders.push_back({ 120, 30, Side::BUY  });
+    orders.push_back({ 120, 2, Side::BUY  });
+    orders.push_back({ 130, 2, Side::BUY  });
+    orders.push_back({ 130, 5, Side::BUY  });
+    orders.push_back({ 130, 2, Side::SELL });
+    orders.push_back({ 120, 2, Side::SELL });
     
     AddOrders(orderBook, orders);
 
@@ -129,20 +129,24 @@ OrderBook Setup()
 int main()
 {
     OrderBook ob = Setup();
-    PrintMap(ob.askBook, "BUY ORDERS: ");
-    PrintMap(ob.bidBook, "SELL ORDERS: ");
     std::vector<Order> orders;
     orders.reserve(6);
-    orders.push_back({ 120, 5,  Side::BUY  });
-    orders.push_back({ 120, 10, Side::BUY  });
-    orders.push_back({ 120, 15, Side::SELL });
-    orders.push_back({ 120, 20, Side::SELL });
-    orders.push_back({ 120, 30, Side::BUY  });
+    orders.push_back({ 110, 1, Side::BUY  });
+    orders.push_back({ 130, 1, Side::BUY  });
+    orders.push_back({ 150, 1, Side::SELL });
+    orders.push_back({ 160, 1, Side::SELL });
     
-    u64 matches = MatchOrders(ob, orders);
-    std::cout << "Matches: " << matches << std::endl;
-    
+    std::cout << "-------------- BEFORE ---------------\n";
     PrintMap(ob.askBook, "BUY ORDERS: ");
     PrintMap(ob.bidBook, "SELL ORDERS: ");
+
+    u64 matches = MatchOrders(ob, orders);
+    
+    std::cout << "\n-------------- AFTER ---------------\n";
+    PrintMap(ob.askBook, "BUY ORDERS: ");
+    PrintMap(ob.bidBook, "SELL ORDERS: ");
+
+    std::cout << "\n\nTotal Matches: " << matches << std::endl;
+
     return 0;
 }
