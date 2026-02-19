@@ -1,29 +1,37 @@
 #include <iostream>
 #include <vector>
+#include <assert.h>
 //-------------------
 #include "types.h"
 #include "orderbook.h"
 #include "utility.h"
 
+void AddOrder(OrderBook& orderBook, const Order& order)
+{
+    if (order.quantity == 0)
+    {
+        std::cout << "couldn't add an order" << std::endl;
+        return;
+    }
+    
+    Order resting = order;
+    resting.id = GenerateID();
+
+    if (order.side == Side::BUY)
+    {
+        orderBook.bidBook[order.price].emplace_back(std::move(resting));
+    }
+    else 
+    {
+        orderBook.askBook[order.price].emplace_back(std::move(resting));     
+    }
+}
 
 void AddOrders(OrderBook& orderBook, const std::vector<Order>& orders)
 {
     for (const auto& order : orders)
     {
-        if (order.quantity == 0)
-        {
-            std::cout << "couldn't add an order" << std::endl;
-            continue;
-        }
-
-        if (order.side == Side::BUY)
-        {
-            orderBook.bidBook[order.price].emplace_back(order);
-        }
-        else 
-        {
-            orderBook.askBook[order.price].emplace_back(order);     
-        }
+        AddOrder(orderBook, order);
     }
 };
 
@@ -42,7 +50,8 @@ u64 MatchOrders(OrderBook& orderBook, std::vector<Order>& orders)
         {
             while (order.quantity > 0 && !askBook.empty())
             {
-                auto& [bestAskPrice, queue] = *askBook.begin();
+                auto it = askBook.begin();
+                auto& [bestAskPrice, queue] = *it;
 
                 if (order.price < bestAskPrice)
                     break;
@@ -61,19 +70,20 @@ u64 MatchOrders(OrderBook& orderBook, std::vector<Order>& orders)
                 }
 
                 if (queue.empty())
-                    askBook.erase(askBook.begin());
+                    askBook.erase(it);
             }
 
             if (order.quantity > 0)
             {
-                bidBook[order.price].emplace_back(order);
+                AddOrder(orderBook, order);
             }
         }
         else
         {
             while (order.quantity > 0 && !bidBook.empty())
             {
-                auto& [bestBidPrice, queue] = *std::prev(bidBook.end());
+                auto it = std::prev(bidBook.end());
+                auto& [bestBidPrice, queue] = *it;
 
                 if (order.price > bestBidPrice)
                     break;
@@ -92,12 +102,12 @@ u64 MatchOrders(OrderBook& orderBook, std::vector<Order>& orders)
                 }
 
                 if (queue.empty())
-                    bidBook.erase(std::prev(bidBook.end()));
+                    bidBook.erase(it);
             }
 
             if (order.quantity > 0)
             {
-                askBook[order.price].emplace_back(order);
+                AddOrder(orderBook, order);
             }
         }
     }
@@ -105,20 +115,17 @@ u64 MatchOrders(OrderBook& orderBook, std::vector<Order>& orders)
     return matches;
 };
 
-// void CancelOrder();
-// void ExecuteOrder();
 
 OrderBook Setup()
 {
     OrderBook orderBook;
-    
     std::vector<Order> orders;
     orders.reserve(6);
-    orders.push_back({ 120, 2, Side::BUY  });
-    orders.push_back({ 130, 2, Side::BUY  });
-    orders.push_back({ 130, 5, Side::BUY  });
-    orders.push_back({ 130, 2, Side::SELL });
-    orders.push_back({ 120, 2, Side::SELL });
+    orders.push_back({ 120, 2, 0, Side::BUY  });
+    orders.push_back({ 130, 2, 0, Side::BUY  });
+    orders.push_back({ 130, 5, 0, Side::BUY  });
+    orders.push_back({ 130, 2, 0, Side::SELL });
+    orders.push_back({ 120, 2, 0, Side::SELL });
     
     AddOrders(orderBook, orders);
 
@@ -131,20 +138,20 @@ int main()
     OrderBook ob = Setup();
     std::vector<Order> orders;
     orders.reserve(6);
-    orders.push_back({ 110, 1, Side::BUY  });
-    orders.push_back({ 130, 1, Side::BUY  });
-    orders.push_back({ 150, 1, Side::SELL });
-    orders.push_back({ 160, 1, Side::SELL });
+    orders.push_back({ 110, 1, 0, Side::BUY  });
+    orders.push_back({ 130, 1, 0, Side::BUY  });
+    orders.push_back({ 150, 1, 0, Side::SELL });
+    orders.push_back({ 160, 1, 0, Side::SELL });
     
     std::cout << "-------------- BEFORE ---------------\n";
-    PrintMap(ob.askBook, "BUY ORDERS: ");
-    PrintMap(ob.bidBook, "SELL ORDERS: ");
+    PrintMap(ob.bidBook, "BUY ORDERS: ");
+    PrintMap(ob.askBook, "SELL ORDERS: ");
 
     u64 matches = MatchOrders(ob, orders);
     
     std::cout << "\n-------------- AFTER ---------------\n";
-    PrintMap(ob.askBook, "BUY ORDERS: ");
-    PrintMap(ob.bidBook, "SELL ORDERS: ");
+    PrintMap(ob.bidBook, "BUY ORDERS: ");
+    PrintMap(ob.askBook, "SELL ORDERS: ");
 
     std::cout << "\n\nTotal Matches: " << matches << std::endl;
 
