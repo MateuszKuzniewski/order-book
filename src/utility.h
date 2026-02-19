@@ -6,3 +6,4 @@
 
 void PrintDeque(const std::deque<Order>& d);
 void PrintMap(const OrderMap& map, const std::string& text);
+u32 GenerateID();
