@@ -15,6 +15,7 @@ struct Order
 {
     u32 price;
     u32 quantity;
+    u32 id;
     Side side;
 };
 
