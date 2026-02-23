@@ -135,14 +135,18 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
 {
     auto it = orderBook.orderIndex.find(orderID);
     if (it == orderBook.orderIndex.end())
+    {
+        std::cout << "Could not cancel order with id: " << orderID << std::endl;
         return false;
+    }
     
     OrderLocation& orderLocation = it->second;
     auto& sideBook = (orderLocation.side == Side::BUY) ? orderBook.bidBook : orderBook.askBook;
 
     auto& queue = orderLocation.priceLevelIterator->second;
+    std::cout << "order with id: " << orderLocation.orderIterator->id << std::endl;
     queue.erase(orderLocation.orderIterator);
-   
+    
     if (queue.empty())
     {
         sideBook.erase(orderLocation.priceLevelIterator);
@@ -177,6 +181,8 @@ int main()
     std::vector<Order> orders;
     orders.reserve(6);
     orders.push_back({ 120, 1, GenerateID(), Side::BUY  });
+    CancelOrder(ob, 2);
+    
     // orders.push_back({ 130, 1, 1, Side::BUY  });
     // orders.push_back({ 150, 1, 2, Side::SELL });
     // orders.push_back({ 160, 1, 2, Side::SELL });
