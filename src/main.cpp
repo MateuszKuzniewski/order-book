@@ -182,14 +182,14 @@ int main()
     // orders.push_back({ 160, 1, 2, Side::SELL });
     
     std::cout << "-------------- BEFORE ---------------\n";
-    PrintMap(ob.bidBook, "BUY ORDERS: ");
-    PrintMap(ob.askBook, "SELL ORDERS: ");
+    PrintBook(ob.bidBook, "BUY ORDERS: ");
+    PrintBook(ob.askBook, "SELL ORDERS: ");
 
     u64 matches = MatchOrders(ob, orders);
     
     std::cout << "\n-------------- AFTER ---------------\n";
-    PrintMap(ob.bidBook, "BUY ORDERS: ");
-    PrintMap(ob.askBook, "SELL ORDERS: ");
+    PrintBook(ob.bidBook, "BUY ORDERS: ");
+    PrintBook(ob.askBook, "SELL ORDERS: ");
 
     std::cout << "\n\nTotal Matches: " << matches << std::endl;
 

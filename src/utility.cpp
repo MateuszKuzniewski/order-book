@@ -22,7 +22,7 @@ void PrintDeque(const std::deque<Order>& d)
     std::cout << "\n";
 };
 
-void PrintMap(const OrderMap& map, const std::string& text)
+void PrintBook(const OrderMap& map, const std::string& text)
 {
     if (map.empty())
     {
