@@ -27,7 +27,7 @@ bool AddOrder(OrderBook& orderBook, const Order& order)
     
     // insert location of the order in the map
     Order& insertedOrder = lvlit->second.back();
-    orderBook.orderIndex[insertedOrder.id] = 
+    orderBook.orderIndex[insertedOrder.id] =
         {
             lvlit,
             orderIt,
@@ -144,7 +144,7 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
     auto& sideBook = (orderLocation.side == Side::BUY) ? orderBook.bidBook : orderBook.askBook;
 
     auto& queue = orderLocation.priceLevelIterator->second;
-    std::cout << "order with id: " << orderLocation.orderIterator->id << std::endl;
+    std::cout << "Canceled order with id: " << orderLocation.orderIterator->id << std::endl;
     queue.erase(orderLocation.orderIterator);
     
     if (queue.empty())
@@ -163,11 +163,11 @@ OrderBook Setup()
     std::vector<Order> orders;
     orders.reserve(6);
     orders.push_back({ 120, 1, GenerateID(), Side::SELL });
-    // orders.push_back({ 120, 2, GenerateID(), Side::SELL });
-    // orders.push_back({ 120, 2, GenerateID(), Side::SELL });
-    // orders.push_back({ 130, 2, GenerateID(), Side::BUY  });
-    // orders.push_back({ 130, 2, 0, Side::SELL });
-    // orders.push_back({ 130, 5, 0, Side::BUY  });
+    orders.push_back({ 120, 2, GenerateID(), Side::SELL });
+    orders.push_back({ 120, 2, GenerateID(), Side::SELL });
+    orders.push_back({ 130, 2, GenerateID(), Side::BUY  });
+    orders.push_back({ 130, 2, GenerateID(), Side::SELL });
+    orders.push_back({ 130, 5, GenerateID(), Side::BUY  });
 
     AddOrders(orderBook, orders);
 
@@ -181,11 +181,9 @@ int main()
     std::vector<Order> orders;
     orders.reserve(6);
     orders.push_back({ 120, 1, GenerateID(), Side::BUY  });
-    CancelOrder(ob, 2);
-    
-    // orders.push_back({ 130, 1, 1, Side::BUY  });
-    // orders.push_back({ 150, 1, 2, Side::SELL });
-    // orders.push_back({ 160, 1, 2, Side::SELL });
+    orders.push_back({ 130, 1, GenerateID(), Side::BUY  });
+    orders.push_back({ 150, 1, GenerateID(), Side::SELL });
+    orders.push_back({ 160, 1, GenerateID(), Side::SELL });
     
     std::cout << "-------------- BEFORE ---------------\n";
     PrintBook(ob.bidBook, "BUY ORDERS: ");
@@ -197,7 +195,8 @@ int main()
     PrintBook(ob.bidBook, "BUY ORDERS: ");
     PrintBook(ob.askBook, "SELL ORDERS: ");
 
-    std::cout << "\n\nTotal Matches: " << matches << std::endl;
+    CancelOrder(ob, 2);
+    std::cout << "\nTotal Matched Orders: " << matches << std::endl;
 
     return 0;
 }
