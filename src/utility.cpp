@@ -15,7 +15,7 @@ void PrintDeque(const std::deque<Order>& d)
     for (size_t i = 0; i < d.size(); i++)
     {
         if (i == 0)
-            std::cout << d[i].quantity;       
+            std::cout << d[i].quantity;
 
         std::cout << ", "<< d[i].quantity;
     }
@@ -34,9 +34,9 @@ void PrintBook(const OrderMap& map, const std::string& text)
     for (auto it = map.begin(); it != map.end(); ++it)
     {
         const auto& [price, queue] = *it;
-        std::cout << "price: " << price << "\n Order id: " << queue.begin()->id; 
+        std::cout << "price: " << price << "\n Order id: " << queue.begin()->id;
         PrintDeque(queue);
-    } 
+    }
     std::cout << "\n";
 };
 
