@@ -29,9 +29,9 @@ bool AddOrder(OrderBook& orderBook, const Order& order)
     Order& insertedOrder = lvlit->second.back();
     orderBook.orderIndex[insertedOrder.id] =
         {
-            lvlit,
-            orderIt,
-            insertedOrder.side,
+            .priceLevelIterator = lvlit,
+            .orderIterator = orderIt,
+            .side = insertedOrder.side,
         };
 
     return inserted;
