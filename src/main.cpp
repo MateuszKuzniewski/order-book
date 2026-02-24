@@ -10,7 +10,7 @@ bool AddOrder(OrderBook& orderBook, const Order& order)
 {
     if (order.quantity == 0)
     {
-        std::cout << "couldn't add an order" << std::endl;
+        std::cout << "can't add an order with quantity 0" << std::endl;
         return false;
     }
     
@@ -136,7 +136,7 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
     auto it = orderBook.orderIndex.find(orderID);
     if (it == orderBook.orderIndex.end())
     {
-        std::cout << "Could not cancel order with id: " << orderID << std::endl;
+        std::cout << "could not cancel order with id: " << orderID << std::endl;
         return false;
     }
     
@@ -144,7 +144,7 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
     auto& sideBook = (orderLocation.side == Side::BUY) ? orderBook.bidBook : orderBook.askBook;
 
     auto& queue = orderLocation.priceLevelIterator->second;
-    std::cout << "Canceled order with id: " << orderLocation.orderIterator->id << std::endl;
+    std::cout << "canceled order with id: " << orderLocation.orderIterator->id << std::endl;
     queue.erase(orderLocation.orderIterator);
     
     if (queue.empty())
@@ -162,12 +162,12 @@ OrderBook Setup()
     OrderBook orderBook;
     std::vector<Order> orders;
     orders.reserve(6);
-    orders.push_back({ 120, 1, GenerateID(), Side::SELL });
-    orders.push_back({ 120, 2, GenerateID(), Side::SELL });
-    orders.push_back({ 120, 2, GenerateID(), Side::SELL });
-    orders.push_back({ 130, 2, GenerateID(), Side::BUY  });
-    orders.push_back({ 130, 2, GenerateID(), Side::SELL });
-    orders.push_back({ 130, 5, GenerateID(), Side::BUY  });
+    
+    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL });
+    orders.push_back({ .price = 130, .quantity = 2, .id = GenerateID(), .side = Side::SELL });
+    orders.push_back({ .price = 140, .quantity = 2, .id = GenerateID(), .side = Side::SELL });
+    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  });
+    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY });
 
     AddOrders(orderBook, orders);
 
@@ -180,23 +180,24 @@ int main()
     OrderBook ob = Setup();
     std::vector<Order> orders;
     orders.reserve(6);
-    orders.push_back({ 120, 1, GenerateID(), Side::BUY  });
-    orders.push_back({ 130, 1, GenerateID(), Side::BUY  });
-    orders.push_back({ 150, 1, GenerateID(), Side::SELL });
-    orders.push_back({ 160, 1, GenerateID(), Side::SELL });
-    
+    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  });
+    orders.push_back({ .price = 130, .quantity = 2, .id = GenerateID(), .side = Side::BUY  });
+    orders.push_back({ .price = 140, .quantity = 2, .id = GenerateID(), .side = Side::BUY  });
+    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL });
+    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL });
+
     std::cout << "-------------- BEFORE ---------------\n";
+
     PrintBook(ob.bidBook, "BUY ORDERS: ");
     PrintBook(ob.askBook, "SELL ORDERS: ");
-
     u64 matches = MatchOrders(ob, orders);
-    
+
     std::cout << "\n-------------- AFTER ---------------\n";
     PrintBook(ob.bidBook, "BUY ORDERS: ");
     PrintBook(ob.askBook, "SELL ORDERS: ");
 
     CancelOrder(ob, 2);
     std::cout << "\nTotal Matched Orders: " << matches << std::endl;
-
+    
     return 0;
 }
