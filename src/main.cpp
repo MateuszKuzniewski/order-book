@@ -1,6 +1,5 @@
 #include <iostream>
-#include <vector>
-#include <assert.h>
+#include <array>
 //-------------------
 #include "types.h"
 #include "orderbook.h"
@@ -37,7 +36,7 @@ bool AddOrder(OrderBook& orderBook, const Order& order)
     return inserted;
 }
 
-void AddOrders(OrderBook& orderBook, const std::vector<Order>& orders)
+void AddOrders(OrderBook& orderBook, const std::array<Order, 6>& orders)
 {
     for (const auto& order : orders)
     {
@@ -45,7 +44,7 @@ void AddOrders(OrderBook& orderBook, const std::vector<Order>& orders)
     }
 };
 
-u64 MatchOrders(OrderBook& orderBook, std::vector<Order>& orders)
+u64 MatchOrders(OrderBook& orderBook, std::array<Order, 6>& orders)
 {
     u64 matches = 0;
     auto& askBook = orderBook.askBook;
@@ -160,14 +159,14 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
 OrderBook Setup()
 {
     OrderBook orderBook;
-    std::vector<Order> orders;
-    orders.reserve(6);
-    
-    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL });
-    orders.push_back({ .price = 130, .quantity = 2, .id = GenerateID(), .side = Side::SELL });
-    orders.push_back({ .price = 140, .quantity = 2, .id = GenerateID(), .side = Side::SELL });
-    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  });
-    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY });
+    std::array<Order, 6> orders =
+    {
+        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL },
+        Order { .price = 130, .quantity = 2, .id = GenerateID(), .side = Side::SELL },
+        Order { .price = 140, .quantity = 2, .id = GenerateID(), .side = Side::SELL },
+        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  },
+        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  }
+    };
 
     AddOrders(orderBook, orders);
 
@@ -178,18 +177,20 @@ OrderBook Setup()
 int main()
 {
     OrderBook ob = Setup();
-    std::vector<Order> orders;
-    orders.reserve(6);
-    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  });
-    orders.push_back({ .price = 130, .quantity = 2, .id = GenerateID(), .side = Side::BUY  });
-    orders.push_back({ .price = 140, .quantity = 2, .id = GenerateID(), .side = Side::BUY  });
-    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL });
-    orders.push_back({ .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL });
+    std::array<Order, 6> orders =
+    {
+        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  },
+        Order { .price = 130, .quantity = 2, .id = GenerateID(), .side = Side::BUY  },
+        Order { .price = 140, .quantity = 2, .id = GenerateID(), .side = Side::BUY  },
+        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL },
+        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL }
+    };
 
     std::cout << "-------------- BEFORE ---------------\n";
 
     PrintBook(ob.bidBook, "BUY ORDERS: ");
     PrintBook(ob.askBook, "SELL ORDERS: ");
+
     u64 matches = MatchOrders(ob, orders);
 
     std::cout << "\n-------------- AFTER ---------------\n";
