@@ -14,13 +14,13 @@ CMake 3.20+
 sudo pacman -S cmake
 ```
 
-C++20 compatible compiler -- recommended: Clang
+Clang
 ```bash
 sudo pacman -S clang
 ```
 
 ## How to build
-
+### Arch Linux
 ### Clone the project
 ```bash
 git clone https://github.com/MateuszKuzniewski/order-book.git
