@@ -36,7 +36,7 @@ git clone https://github.com/MateuszKuzniewski/order-book.git
 
 ### Build with CMake
 ```shell
-cmake -S. -B build -G Ninja
+cmake -S . -B build -G Ninja
 cmake --build build
 ```
 
