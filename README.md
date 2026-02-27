@@ -3,7 +3,7 @@ C++ Order Book implementation
 
 🚧 Currently under development 🚧
 
-## Dependencies
+## Dependencies - Arch Linux
 Ninja
 ```bash
 sudo pacman -S ninja
@@ -19,8 +19,8 @@ Clang
 sudo pacman -S clang
 ```
 
-## How to build
-### Arch Linux
+## How to build - Linux
+
 ### Clone the project
 ```bash
 git clone https://github.com/MateuszKuzniewski/order-book.git
