@@ -3,20 +3,19 @@ C++ Order Book implementation
 
 Currently under development
 
-## Dependencies - Arch Linux
-Ninja
-```bash
-sudo pacman -S ninja
-```
+## Dependencies
 
-CMake 3.20+
-```bash
-sudo pacman -S cmake
-```
+* Ninja
+* CMake 3.20+
+* Clang
 
-Clang
-```bash
-sudo pacman -S clang
+#### Arch Linux
+```shell
+sudo pacman -S cmake clang ninja
+```
+#### Debian / Ubuntu
+```shell
+sudo apt install cmake ninja-build clang
 ```
 
 ## How to build - Linux
