@@ -34,5 +34,5 @@ cmake --build build
 
 ### Run 
 ```shell
-./my_app
+./build/my_app
 ```
