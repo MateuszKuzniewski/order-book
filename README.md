@@ -18,10 +18,19 @@ sudo pacman -S cmake clang ninja
 sudo apt install cmake ninja-build clang
 ```
 
-## How to build - Linux
+#### Windows
+Install ninja with Winget
+```shell
+winget install Ninja-build.Ninja
+```
+
+
+
+## How to build
+## - Linux
 
 ### Clone the project
-```bash
+```shell
 git clone https://github.com/MateuszKuzniewski/order-book.git
 ```
 
@@ -35,3 +44,20 @@ cmake --build build
 ```shell
 ./build/my_app
 ```
+
+## - Windows
+### Clone the project
+```shell
+git clone https://github.com/MateuszKuzniewski/order-book.git
+```
+
+### Build with CMake
+```shell
+cmake -B build -G Ninja
+cmake --build build
+```
+### Run
+```shell
+build\my_app.exe
+```
+
