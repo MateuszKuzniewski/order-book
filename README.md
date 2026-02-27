@@ -1,7 +1,7 @@
 # order-book
 C++ Order Book implementation
 
-🚧 Currently under development 🚧
+Currently under development
 
 ## Dependencies - Arch Linux
 Ninja
