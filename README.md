@@ -6,7 +6,7 @@ Currently under development
 ## Dependencies
 
 * Ninja
-* CMake 3.20+
+* CMake 4.2.3
 * Clang
 
 #### Arch Linux
