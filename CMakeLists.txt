@@ -18,16 +18,16 @@ add_definitions(-DSOME_DEFINITION)
 
 add_executable(my_app ${sources})
 
-target_compile_options(my_app PRIVATE
-    -g
-    -O0
-    -fsanitize=address,undefined
-    -fno-omit-frame-pointer
-)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT WIN32)
+    target_compile_options(my_app PRIVATE
+        -g
+        -O0
+        -fsanitize=address,undefined
+        -fno-omit-frame-pointer
+    )
 
-target_link_options(my_app PRIVATE
-    -fsanitize=address,undefined
-)
+    target_link_options(my_app PRIVATE -fsanitize=address,undefined)
+endif()
 
 target_include_directories(my_app PUBLIC "${CMAKE_SOURCE_DIR}/include")
 
