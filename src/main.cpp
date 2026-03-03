@@ -1,9 +1,16 @@
+#include <cstdlib>
+#include <cmath>
 #include <iostream>
 #include <array>
+#include <fstream>
+#include <assert.h>
+#include <sstream>
 //-------------------
 #include "types.h"
 #include "orderbook.h"
 #include "utility.h"
+
+const std::string ORDERS_PATH = "../order-book/data/orders.csv";
 
 bool AddOrder(OrderBook& orderBook, const Order& order)
 {
@@ -13,13 +20,16 @@ bool AddOrder(OrderBook& orderBook, const Order& order)
         return false;
     }
     
+    if (orderBook.orderIndex.contains(order.id))
+        return false;
+
     auto& sidebook = (order.side == Side::BUY) ? orderBook.bidBook : orderBook.askBook;
     
     // get iterator to an inserted list of orders
     auto [lvlit, inserted] = sidebook.try_emplace(order.price);
     
     // move order into the list
-    lvlit->second.emplace_back(std::move(order));
+    lvlit->second.emplace_back(order);
 
     // get iterator to the last order in the list
     auto orderIt = std::prev(lvlit->second.end());
@@ -36,15 +46,8 @@ bool AddOrder(OrderBook& orderBook, const Order& order)
     return inserted;
 }
 
-void AddOrders(OrderBook& orderBook, const std::array<Order, 6>& orders)
-{
-    for (const auto& order : orders)
-    {
-        AddOrder(orderBook, order);
-    }
-};
 
-u64 MatchOrders(OrderBook& orderBook, std::array<Order, 6>& orders)
+u64 MatchOrders(OrderBook& orderBook, std::array<Order, 5>& orders)
 {
     u64 matches = 0;
     auto& askBook = orderBook.askBook;
@@ -54,7 +57,7 @@ u64 MatchOrders(OrderBook& orderBook, std::array<Order, 6>& orders)
     {
         if (order.quantity == 0)
             continue;
-        
+    
         if (order.side == Side::BUY)
         {
             while (order.quantity > 0 && !askBook.empty())
@@ -135,7 +138,6 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
     auto it = orderBook.orderIndex.find(orderID);
     if (it == orderBook.orderIndex.end())
     {
-        std::cout << "could not cancel order with id: " << orderID << std::endl;
         return false;
     }
     
@@ -155,50 +157,69 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
     return true;
 };
 
-
-OrderBook Setup()
+void ParseOrderFromFile(const std::string& line, Order& order)
 {
-    OrderBook orderBook;
-    std::array<Order, 6> orders =
-    {
-        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL },
-        Order { .price = 130, .quantity = 2, .id = GenerateID(), .side = Side::SELL },
-        Order { .price = 140, .quantity = 2, .id = GenerateID(), .side = Side::SELL },
-        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  },
-        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  }
-    };
+    std::stringstream ss(line);
+    std::string sCommand, sId, sPrice, sQuantity, sSide;
+    std::getline(ss, sCommand, ',');
+    std::getline(ss, sId, ',');
+    std::getline(ss, sPrice, ',');
+    std::getline(ss, sQuantity, ',');
+    std::getline(ss, sSide, ',');
+    
+    order.id = static_cast<u32>(StringToInt(sId));
+    order.quantity = static_cast<u32>(StringToInt(sQuantity));
+    order.price = static_cast<u32>(std::round(StringToDouble(sPrice) * 100));
+             
+    order.command = (sCommand == "Add" || sCommand == "ADD") ? Command::ADD : Command::CANCEL;
+    order.side = (sSide == "Buy" || sSide == "BUY") ? Side::BUY : Side::SELL;
 
-    AddOrders(orderBook, orders);
-
-    return orderBook;
+    // std::cout << "command: " << (int)order.command 
+    //     << " id: " << order.id
+    //     << " price: " << order.price 
+    //     << " quantity: " << order.quantity 
+    //     << " side: " << (int)order.side << std::endl;
 };
-
 
 int main()
 {
-    OrderBook ob = Setup();
-    std::array<Order, 6> orders =
+    OrderBook ob;
+    std::ifstream file(ORDERS_PATH);
+    
+    if (!file.is_open())
     {
-        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::BUY  },
-        Order { .price = 130, .quantity = 2, .id = GenerateID(), .side = Side::BUY  },
-        Order { .price = 140, .quantity = 2, .id = GenerateID(), .side = Side::BUY  },
-        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL },
-        Order { .price = 120, .quantity = 1, .id = GenerateID(), .side = Side::SELL }
-    };
+        std::cout << "Failed to open a file \n";
+        return EXIT_FAILURE;
+    }
 
+    std::string line;
+    while (std::getline(file, line))
+    {
+        if (line[0] != '#')
+        {
+            Order order {};
+            ParseOrderFromFile(line, order);
+            
+            if (order.command == Command::ADD)
+                AddOrder(ob, order);
+            else
+                CancelOrder(ob, order.id);
+        }
+    }
+
+    file.close();
+    
     std::cout << "-------------- BEFORE ---------------\n";
 
     PrintBook(ob.bidBook, "BUY ORDERS: ");
     PrintBook(ob.askBook, "SELL ORDERS: ");
 
-    u64 matches = MatchOrders(ob, orders);
 
     std::cout << "\n-------------- AFTER ---------------\n";
     PrintBook(ob.bidBook, "BUY ORDERS: ");
     PrintBook(ob.askBook, "SELL ORDERS: ");
 
-    CancelOrder(ob, 2);
-    std::cout << "\nTotal Matched Orders: " << matches << std::endl;
+    // std::cout << "\nTotal Matched Orders: " << matches << std::endl;
     
-    return 0;
+    return EXIT_SUCCESS;
 }
