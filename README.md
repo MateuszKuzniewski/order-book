@@ -37,9 +37,10 @@ git clone https://github.com/MateuszKuzniewski/order-book.git
 ### Build with CMake
 ```shell
 cmake -S . -B build -G Ninja
+```
+```shell
 cmake --build build
 ```
-
 ### Run 
 ```shell
 ./build/my_app
@@ -54,8 +55,11 @@ git clone https://github.com/MateuszKuzniewski/order-book.git
 ### Build with CMake
 ```shell
 cmake -B build -G Ninja
+```
+```shell
 cmake --build build
 ```
+
 ### Run
 ```shell
 build\my_app.exe
