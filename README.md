@@ -26,9 +26,7 @@ winget install Ninja-build.Ninja
 
 
 
-## How to build
-## - Linux
-
+## Build - Linux
 ### Clone the project
 ```shell
 git clone https://github.com/MateuszKuzniewski/order-book.git
@@ -46,7 +44,7 @@ cmake --build build
 ./build/my_app
 ```
 
-## - Windows
+## Build - Windows
 ### Clone the project
 ```shell
 git clone https://github.com/MateuszKuzniewski/order-book.git
