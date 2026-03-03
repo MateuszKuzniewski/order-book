@@ -3,6 +3,24 @@
 //------------------
 #include "utility.h"
 
+i32 StringToInt(const std::string& string)
+{
+    i32 fallback = 0;
+    if (string.empty())
+        return fallback;
+    
+    return std::stoi(string);
+};
+
+f64 StringToDouble(const std::string& string)
+{
+    f64 fallback = 0.0;
+    if (string.empty())
+        return fallback;
+
+    return std::stod(string);
+};
+
 void PrintDeque(const std::deque<Order>& d)
 {
     if (d.empty())
