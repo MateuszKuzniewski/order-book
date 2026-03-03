@@ -5,7 +5,7 @@
 //----------------
 #include "types.h"
 
-enum class Command : u8
+enum class Operation : u8
 {
     ADD,
     CANCEL
@@ -23,7 +23,7 @@ struct Order
     u32 quantity;
     u32 id;
     Side side;
-    Command command;
+    Operation operation;
 };
 
 typedef std::deque<Order> OrderList;

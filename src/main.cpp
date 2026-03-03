@@ -160,8 +160,8 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
 void ParseOrderFromFile(const std::string& line, Order& order)
 {
     std::stringstream ss(line);
-    std::string sCommand, sId, sPrice, sQuantity, sSide;
-    std::getline(ss, sCommand, ',');
+    std::string sOperation, sId, sPrice, sQuantity, sSide;
+    std::getline(ss, sOperation, ',');
     std::getline(ss, sId, ',');
     std::getline(ss, sPrice, ',');
     std::getline(ss, sQuantity, ',');
@@ -171,14 +171,8 @@ void ParseOrderFromFile(const std::string& line, Order& order)
     order.quantity = static_cast<u32>(StringToInt(sQuantity));
     order.price = static_cast<u32>(std::round(StringToDouble(sPrice) * 100));
              
-    order.command = (sCommand == "Add" || sCommand == "ADD") ? Command::ADD : Command::CANCEL;
+    order.operation = (sOperation == "Add" || sOperation == "ADD") ? Operation::ADD : Operation::CANCEL;
     order.side = (sSide == "Buy" || sSide == "BUY") ? Side::BUY : Side::SELL;
-
-    // std::cout << "command: " << (int)order.command 
-    //     << " id: " << order.id
-    //     << " price: " << order.price 
-    //     << " quantity: " << order.quantity 
-    //     << " side: " << (int)order.side << std::endl;
 };
 
 int main()
@@ -200,7 +194,7 @@ int main()
             Order order {};
             ParseOrderFromFile(line, order);
             
-            if (order.command == Command::ADD)
+            if (order.operation == Operation::ADD)
                 AddOrder(ob, order);
             else
                 CancelOrder(ob, order.id);
