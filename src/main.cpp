@@ -157,15 +157,18 @@ bool CancelOrder(OrderBook& orderBook, u32 orderID)
     return true;
 };
 
-void ParseOrderFromFile(const std::string& line, Order& order)
+Order ParseOrderFromFile(const std::string& line)
 {
+    Order order {};
+    char delimiter = ',';
     std::stringstream ss(line);
     std::string sOperation, sId, sPrice, sQuantity, sSide;
-    std::getline(ss, sOperation, ',');
-    std::getline(ss, sId, ',');
-    std::getline(ss, sPrice, ',');
-    std::getline(ss, sQuantity, ',');
-    std::getline(ss, sSide, ',');
+
+    std::getline(ss, sOperation, delimiter);
+    std::getline(ss, sId, delimiter);
+    std::getline(ss, sPrice, delimiter);
+    std::getline(ss, sQuantity, delimiter);
+    std::getline(ss, sSide, delimiter);
     
     order.id = static_cast<u32>(StringToInt(sId));
     order.quantity = static_cast<u32>(StringToInt(sQuantity));
@@ -173,12 +176,15 @@ void ParseOrderFromFile(const std::string& line, Order& order)
              
     order.operation = (sOperation == "Add" || sOperation == "ADD") ? Operation::ADD : Operation::CANCEL;
     order.side = (sSide == "Buy" || sSide == "BUY") ? Side::BUY : Side::SELL;
+    
+    return order;
 };
 
 int main()
 {
     OrderBook ob;
     std::ifstream file(ORDERS_PATH);
+    std::string line;
     
     if (!file.is_open())
     {
@@ -186,14 +192,11 @@ int main()
         return EXIT_FAILURE;
     }
 
-    std::string line;
-    Order order {};
-
     while (std::getline(file, line))
     {
         if (line[0] != '#')
         {
-            ParseOrderFromFile(line, order);
+            Order order = ParseOrderFromFile(line);
             
             if (order.operation == Operation::ADD)
                 AddOrder(ob, order);
