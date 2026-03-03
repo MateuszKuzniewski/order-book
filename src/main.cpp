@@ -187,11 +187,12 @@ int main()
     }
 
     std::string line;
+    Order order {};
+
     while (std::getline(file, line))
     {
         if (line[0] != '#')
         {
-            Order order {};
             ParseOrderFromFile(line, order);
             
             if (order.operation == Operation::ADD)
