@@ -5,6 +5,12 @@
 //----------------
 #include "types.h"
 
+enum class Command : u8
+{
+    ADD,
+    CANCEL
+};
+
 enum class Side : u8
 {
     BUY,
@@ -17,6 +23,7 @@ struct Order
     u32 quantity;
     u32 id;
     Side side;
+    Command command;
 };
 
 typedef std::deque<Order> OrderList;
@@ -33,7 +40,7 @@ struct OrderLocation
 };
 
 // mapping: order id -> order location
-typedef std::unordered_map<u64, OrderLocation> OrderIndex;
+typedef std::unordered_map<u32, OrderLocation> OrderIndex;
 
 struct OrderBook
 {
