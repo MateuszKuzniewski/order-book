@@ -133,9 +133,9 @@ u64 MatchOrders(OrderBook& orderBook, std::array<Order, 5>& orders)
     return matches;
 };
 
-bool CancelOrder(OrderBook& orderBook, u32 orderID)
+bool CancelOrder(OrderBook& orderBook, Order& order)
 {
-    auto it = orderBook.orderIndex.find(orderID);
+    auto it = orderBook.orderIndex.find(order.id);
     if (it == orderBook.orderIndex.end())
     {
         return false;
@@ -201,7 +201,7 @@ int main()
             if (order.operation == Operation::ADD)
                 AddOrder(ob, order);
             else
-                CancelOrder(ob, order.id);
+                CancelOrder(ob, order);
         }
     }
 
