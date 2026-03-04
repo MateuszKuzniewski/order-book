@@ -44,7 +44,7 @@ void PrintBook(const OrderMap& map, const std::string& text)
 {
     if (map.empty())
     {
-        std::cout << "Map is empty\n";
+        std::cout << text << " Map is empty\n";
         return;
     } 
     
