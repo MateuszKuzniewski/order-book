@@ -25,7 +25,7 @@ void print_deque(const std::deque<order_data>& d)
 {
     if (d.empty())
     {
-        std::cout << "List is empty\n";
+        std::cout << "list is empty\n";
         return;
     }
 
@@ -44,7 +44,7 @@ void print_book(const order_map& map, const std::string& text)
 {
     if (map.empty())
     {
-        std::cout << text << " Map is empty\n";
+        std::cout << text << "map is empty\n";
         return;
     } 
     
