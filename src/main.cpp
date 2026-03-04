@@ -14,7 +14,7 @@ bool AddOrder(OrderBook& orderBook, const Order& order)
 {
     if (order.quantity == 0)
     {
-        std::cout << "can't add an order with quantity 0" << std::endl;
+        std::cout << "SYSTEM: can't add an order with quantity 0" << std::endl;
         return false;
     }
     
@@ -137,7 +137,7 @@ bool CancelOrder(OrderBook& orderBook, Order& order)
     auto& sideBook = (orderLocation.side == Side::BUY) ? orderBook.bidBook : orderBook.askBook;
 
     auto& queue = orderLocation.priceLevelIterator->second;
-    std::cout << "canceled order with id: " << orderLocation.orderIterator->id << std::endl;
+    std::cout << "SYSTEM: canceled order with id: " << orderLocation.orderIterator->id << std::endl;
     queue.erase(orderLocation.orderIterator);
     
     if (queue.empty())
@@ -183,7 +183,7 @@ int main()
 
     if (!file.is_open())
     {
-        std::cout << "Failed to open a file \n";
+        std::cout << "SYSTEM: failed to open a file \n";
         return EXIT_FAILURE;
     }
 
@@ -202,8 +202,6 @@ int main()
 
     file.close();
     
-    
-    std::cout << "\n-------------- AFTER ---------------\n";
     PrintBook(ob.bidBook, "BUY ORDERS: ");
     PrintBook(ob.askBook, "SELL ORDERS: ");
 
