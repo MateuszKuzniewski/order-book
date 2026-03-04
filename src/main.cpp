@@ -151,7 +151,6 @@ bool CancelOrder(OrderBook& orderBook, Order& order)
 
 Order ParseOrderFromFile(const std::string& line)
 {
-    Order order {};
     char delimiter = ',';
     std::stringstream ss(line);
     std::string sOperation, sId, sPrice, sQuantity, sSide;
@@ -162,14 +161,17 @@ Order ParseOrderFromFile(const std::string& line)
     std::getline(ss, sQuantity, delimiter);
     std::getline(ss, sSide, delimiter);
     
-    order.id = static_cast<u32>(StringToInt(sId));
-    order.quantity = static_cast<u32>(StringToInt(sQuantity));
-    order.price = static_cast<u32>(std::round(StringToDouble(sPrice) * 100));
+    Order order 
+    {
+        .price = static_cast<u32>(std::round(StringToDouble(sPrice) * 100)),
+        .quantity = static_cast<u32>(StringToInt(sQuantity)),
+        .id = static_cast<u32>(StringToInt(sId)),
 
-    // TO DO: Figure out a better way to parse strings -> enums
-    order.operation = (sOperation == "Add" || sOperation == "ADD") ? Operation::ADD : Operation::CANCEL;
-    order.side = (sSide == "Buy" || sSide == "BUY") ? Side::BUY : Side::SELL;
-    
+        // TO DO: Figure out a better way to parse strings -> enums
+        .side = (sSide == "Buy" || sSide == "BUY") ? Side::BUY : Side::SELL,
+        .operation = (sOperation == "Add" || sOperation == "ADD") ? Operation::ADD : Operation::CANCEL,
+    };
+   
     return order;
 };
 
