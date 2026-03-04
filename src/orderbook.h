@@ -5,46 +5,46 @@
 //----------------
 #include "types.h"
 
-enum class Operation : u8
+enum class operation : u8
 {
     ADD,
     CANCEL
 };
 
-enum class Side : u8
+enum class side : u8
 {
     BUY,
     SELL
 };
 
-struct Order
+struct order_data
 {
     u32 price;
     u32 quantity;
     u32 id;
-    Side side;
-    Operation operation;
+    side side;
+    operation operation;
 };
 
-typedef std::deque<Order> OrderList;
+typedef std::deque<order_data> order_list;
 
 // mapping: price -> list of orders for that price
-typedef std::map<u32, OrderList> OrderMap;
+typedef std::map<u32, order_list> order_map;
 
 
-struct OrderLocation
+struct order_location
 {
-    OrderMap::iterator  priceLevelIterator;
-    OrderList::iterator orderIterator;
-    Side side;
+    order_map::iterator  price_level_iterator;
+    order_list::iterator order_iterator;
+    side side;
 };
 
 // mapping: order id -> order location
-typedef std::unordered_map<u32, OrderLocation> OrderIndex;
+typedef std::unordered_map<u32, order_location> order_index;
 
-struct OrderBook
+struct order_book
 {
-    OrderMap bidBook;
-    OrderMap askBook;
-    OrderIndex orderIndex;
+    order_map bidbook;
+    order_map askbook;
+    order_index order_index;
 };

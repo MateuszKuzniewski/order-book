@@ -3,7 +3,7 @@
 //------------------
 #include "utility.h"
 
-i32 StringToInt(const std::string& string)
+i32 string_to_int(const std::string& string)
 {
     i32 fallback = 0;
     if (string.empty())
@@ -12,7 +12,7 @@ i32 StringToInt(const std::string& string)
     return std::stoi(string);
 };
 
-f64 StringToDouble(const std::string& string)
+f64 string_to_double(const std::string& string)
 {
     f64 fallback = 0.0;
     if (string.empty())
@@ -21,7 +21,7 @@ f64 StringToDouble(const std::string& string)
     return std::stod(string);
 };
 
-void PrintDeque(const std::deque<Order>& d)
+void print_deque(const std::deque<order_data>& d)
 {
     if (d.empty())
     {
@@ -40,7 +40,7 @@ void PrintDeque(const std::deque<Order>& d)
     std::cout << "\n";
 };
 
-void PrintBook(const OrderMap& map, const std::string& text)
+void print_book(const order_map& map, const std::string& text)
 {
     if (map.empty())
     {
@@ -53,7 +53,7 @@ void PrintBook(const OrderMap& map, const std::string& text)
     {
         const auto& [price, queue] = *it;
         std::cout << "price: " << price << "\n Order id: " << queue.begin()->id;
-        PrintDeque(queue);
+        print_deque(queue);
     }
     std::cout << "\n";
 };

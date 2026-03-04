@@ -3,7 +3,7 @@
 //----------------
 #include "orderbook.h"
 
-i32 StringToInt(const std::string& string);
-f64 StringToDouble(const std::string& string);
-void PrintDeque(const std::deque<Order>& d);
-void PrintBook(const OrderMap& map, const std::string& text);
+i32 string_to_int(const std::string& string);
+f64 string_to_double(const std::string& string);
+void print_deque(const std::deque<order_data>& d);
+void print_book(const order_map& map, const std::string& text);
