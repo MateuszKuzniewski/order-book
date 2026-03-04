@@ -1,9 +1,7 @@
-#include <cstdlib>
 #include <cmath>
 #include <iostream>
 #include <array>
 #include <fstream>
-#include <assert.h>
 #include <sstream>
 //-------------------
 #include "types.h"
@@ -47,86 +45,80 @@ bool AddOrder(OrderBook& orderBook, const Order& order)
 }
 
 
-u64 MatchOrders(OrderBook& orderBook, std::array<Order, 5>& orders)
+u64 MatchOrders(OrderBook& orderBook, Order& order)
 {
     u64 matches = 0;
     auto& askBook = orderBook.askBook;
     auto& bidBook = orderBook.bidBook;
 
-    for (auto& order : orders)
+    if (order.side == Side::BUY)
     {
-        if (order.quantity == 0)
-            continue;
-    
-        if (order.side == Side::BUY)
+        while (order.quantity > 0 && !askBook.empty())
         {
-            while (order.quantity > 0 && !askBook.empty())
+            auto it = askBook.begin();
+            auto& [bestAskPrice, queue] = *it;
+
+            if (order.price < bestAskPrice)
+                break;
+
+            while (order.quantity > 0 && !queue.empty())
             {
-                auto it = askBook.begin();
-                auto& [bestAskPrice, queue] = *it;
+                Order& resting = queue.front();
+                u64 traded = std::min(order.quantity, resting.quantity);
 
-                if (order.price < bestAskPrice)
-                    break;
+                order.quantity -= traded;
+                resting.quantity -= traded;
+                matches += traded;
 
-                while (order.quantity > 0 && !queue.empty())
+                if (resting.quantity == 0)
                 {
-                    Order& resting = queue.front();
-                    u64 traded = std::min(order.quantity, resting.quantity);
-
-                    order.quantity -= traded;
-                    resting.quantity -= traded;
-                    matches += traded;
-
-                    if (resting.quantity == 0)
-                    {
-                        orderBook.orderIndex.erase(resting.id);
-                        queue.pop_front();
-                    }
+                    orderBook.orderIndex.erase(resting.id);
+                    queue.pop_front();
                 }
-
-                if (queue.empty())
-                    askBook.erase(it);
             }
 
-            if (order.quantity > 0)
-            {
-                AddOrder(orderBook, order);
-            }
+            if (queue.empty())
+                askBook.erase(it);
         }
-        else
+
+        if (order.quantity > 0)
         {
-            while (order.quantity > 0 && !bidBook.empty())
+            AddOrder(orderBook, order);
+        }
+    }
+    else
+    {
+        while (order.quantity > 0 && !bidBook.empty())
+        {
+            auto it = std::prev(bidBook.end());
+            auto& [bestBidPrice, queue] = *it;
+
+            if (order.price > bestBidPrice)
+                break;
+
+            while (order.quantity > 0 && !queue.empty())
             {
-                auto it = std::prev(bidBook.end());
-                auto& [bestBidPrice, queue] = *it;
+                Order& resting = queue.front();
+                u64 traded = std::min(order.quantity, resting.quantity);
 
-                if (order.price > bestBidPrice)
-                    break;
+                order.quantity -= traded;
+                resting.quantity -= traded;
+                matches += traded;
 
-                while (order.quantity > 0 && !queue.empty())
+                if (resting.quantity == 0)
                 {
-                    Order& resting = queue.front();
-                    u64 traded = std::min(order.quantity, resting.quantity);
-
-                    order.quantity -= traded;
-                    resting.quantity -= traded;
-                    matches += traded;
-
-                    if (resting.quantity == 0)
-                    {
-                        orderBook.orderIndex.erase(resting.id);
-                        queue.pop_front();
-                    }
+                    orderBook.orderIndex.erase(resting.id);
+                    queue.pop_front();
                 }
-
-                if (queue.empty())
-                    bidBook.erase(it);
             }
 
-            if (order.quantity > 0)
-            {
-                AddOrder(orderBook, order);
-            }
+            if (queue.empty())
+                bidBook.erase(it);
+        }
+
+        if (order.quantity > 0)
+        {
+            AddOrder(orderBook, order);
         }
     }
 
@@ -173,7 +165,8 @@ Order ParseOrderFromFile(const std::string& line)
     order.id = static_cast<u32>(StringToInt(sId));
     order.quantity = static_cast<u32>(StringToInt(sQuantity));
     order.price = static_cast<u32>(std::round(StringToDouble(sPrice) * 100));
-             
+
+    // TO DO: Figure out a better way to parse strings -> enums
     order.operation = (sOperation == "Add" || sOperation == "ADD") ? Operation::ADD : Operation::CANCEL;
     order.side = (sSide == "Buy" || sSide == "BUY") ? Side::BUY : Side::SELL;
     
@@ -183,9 +176,11 @@ Order ParseOrderFromFile(const std::string& line)
 int main()
 {
     OrderBook ob;
+    u32 matches = 0;
+
     std::ifstream file(ORDERS_PATH);
     std::string line;
-    
+
     if (!file.is_open())
     {
         std::cout << "Failed to open a file \n";
@@ -199,7 +194,7 @@ int main()
             Order order = ParseOrderFromFile(line);
             
             if (order.operation == Operation::ADD)
-                AddOrder(ob, order);
+                matches += MatchOrders(ob, order);
             else
                 CancelOrder(ob, order);
         }
@@ -207,17 +202,12 @@ int main()
 
     file.close();
     
-    std::cout << "-------------- BEFORE ---------------\n";
-
-    PrintBook(ob.bidBook, "BUY ORDERS: ");
-    PrintBook(ob.askBook, "SELL ORDERS: ");
-
-
+    
     std::cout << "\n-------------- AFTER ---------------\n";
     PrintBook(ob.bidBook, "BUY ORDERS: ");
     PrintBook(ob.askBook, "SELL ORDERS: ");
 
-    // std::cout << "\nTotal Matched Orders: " << matches << std::endl;
+    std::cout << "\nTotal Matched Orders: " << matches << "\n\n";
     
     return EXIT_SUCCESS;
 }
