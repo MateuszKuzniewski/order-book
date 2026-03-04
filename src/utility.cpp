@@ -57,9 +57,3 @@ void PrintBook(const OrderMap& map, const std::string& text)
     }
     std::cout << "\n";
 };
-
-u32 GenerateID()
-{
-    static u32 counter = 1;
-    return counter++;
-};
