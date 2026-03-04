@@ -1,8 +1,8 @@
 #include <cmath>
 #include <iostream>
-#include <array>
 #include <fstream>
 #include <sstream>
+#include <assert.h>
 //-------------------
 #include "types.h"
 #include "orderbook.h"
@@ -191,14 +191,17 @@ int main()
 
     while (std::getline(file, line))
     {
-        if (line[0] != '#')
+        char firstCharacter = line[0];
+        if (firstCharacter != '#')
         {
             Order order = ParseOrderFromFile(line);
             
-            if (order.operation == Operation::ADD)
-                matches += MatchOrders(ob, order);
-            else
-                CancelOrder(ob, order);
+            switch(order.operation)
+            {
+                case Operation::ADD: matches += MatchOrders(ob, order); break;
+                case Operation::CANCEL: CancelOrder(ob, order); break;
+                default: assert(false && "Unhandeled Operation - No Implementation"); break;
+            }
         }
     }
 
