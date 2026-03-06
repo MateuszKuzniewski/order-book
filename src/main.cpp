@@ -6,7 +6,6 @@
 #include "utility.h"
 #include "order_parser.h"
 
-const std::string ORDERS_PATH = "../order-book/data/orders.csv";
 
 bool add_order(order_book& orderbook, const order_data& order)
 {
@@ -151,7 +150,7 @@ bool cancel_order(order_book& orderbook, order_data& order)
 int main()
 {
     order_book orderbook;
-    u32 matches = 0;
+    const std::string ORDERS_PATH = "../order-book/data/orders.csv";
 
     std::ifstream file(ORDERS_PATH);
     std::string line;
@@ -162,6 +161,7 @@ int main()
         return EXIT_FAILURE;
     }
     
+    u32 matches = 0;
     while (std::getline(file, line))
     {
         char firstCharacter = line[0];
