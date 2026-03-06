@@ -8,6 +8,7 @@ Currently under development
 * Ninja
 * CMake 4.2.3
 * Clang
+* Catch v2 (included as a single header file)
 
 #### Arch Linux
 ```shell
