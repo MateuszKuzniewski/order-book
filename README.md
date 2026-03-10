@@ -38,7 +38,7 @@ git clone https://github.com/MateuszKuzniewski/order-book.git
 cmake -S . -B build -G Ninja
 ```
 ```shell
-cmake --build build
+cmake --build build --target build_source
 ```
 ### Run 
 ```shell
@@ -56,11 +56,23 @@ git clone https://github.com/MateuszKuzniewski/order-book.git
 cmake -B build -G Ninja
 ```
 ```shell
-cmake --build build
+cmake --build build --target build_source
 ```
 
 ### Run
 ```shell
 build\build_source.exe
 ```
+## Build - Tests
+configure the project then run
+```shell
+ cmake --build build --target build_test 
+```
 
+### run
+```shell
+build/build_test
+```
+```shell
+build\build_test.exe
+```
