@@ -2,24 +2,42 @@
 #include <orderbook.h>
 #include <utility.h>
 #include <types.h>
+#include <order_parser.h>
+//------------------------
 #include "catch.h"
 
-int TestFunction(int i)
+TEST_CASE("convert string to int", "[stringtoint]") 
 {
-    return i;
-};
-
-int TestFunction1(int i)
-{
-    return 5;
-};
-
-TEST_CASE("Running test case", "[testfunction]")
-{
-    REQUIRE(TestFunction(1) == 1);
+    REQUIRE(string_to_int("1") == 1);
+    REQUIRE(string_to_int("15012592") == 15012592);
+    REQUIRE(string_to_int("") == 0);
+    REQUIRE(string_to_int(" ") == 0);
+    REQUIRE(string_to_int("0") == 0);
 }
 
-TEST_CASE("Running test case1", "[testfunction1]")
+TEST_CASE("convert string to double", "[stringtodouble]")
 {
-    REQUIRE(TestFunction1(1) == 1);
+    REQUIRE(string_to_double("1.1") == 1.1);
+    REQUIRE(string_to_double("1000000.01") == 1000000.01);
+    REQUIRE(string_to_double("") == 0);
+    REQUIRE(string_to_double(" ") == 0);
+    REQUIRE(string_to_double("0") == 0);
+    REQUIRE(string_to_double("0.0") == 0);
+}
+
+TEST_CASE("parse string into an order" "[parseorderfromfile]")
+{
+    const std::string testString = "ADD,1,101.5,100,SELL";
+    const order_data testOrder 
+    {
+        .price = 10150,
+        .quantity = 100,
+        .id = 1,
+
+        // TO DO: Figure out a better way to parse strings -> enums
+        .side = side::SELL,
+        .operation = operation::ADD,
+    };
+ 
+    REQUIRE(parse_order_from_file(testString) == testOrder);
 }
