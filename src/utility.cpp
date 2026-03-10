@@ -1,23 +1,33 @@
 #include <cstddef>
 #include <iostream>
+#include <bits/stdc++.h>
+#include <cctype>
 //------------------
 #include "utility.h"
 
 i32 string_to_int(const std::string& string)
 {
     i32 fallback = 0;
-    if (string.empty())
+    std::string copy = string;
+
+    copy.erase(std::remove_if(copy.begin(), copy.end(), ::isspace), copy.end());
+
+    if (copy.empty())
         return fallback;
     
-    return std::stoi(string);
+    return std::stoi(copy);
 };
 
 f64 string_to_double(const std::string& string)
 {
-    f64 fallback = 0.0;
-    if (string.empty())
-        return fallback;
+    i32 fallback = 0;
+    std::string copy = string;
 
+    copy.erase(std::remove_if(copy.begin(), copy.end(), ::isspace), copy.end());
+
+    if (copy.empty())
+        return fallback;
+    
     return std::stod(string);
 };
 
