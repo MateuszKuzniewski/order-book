@@ -42,7 +42,7 @@ cmake --build build
 ```
 ### Run 
 ```shell
-./build/my_app
+./build/build_source
 ```
 
 ## Build - Windows
@@ -61,6 +61,6 @@ cmake --build build
 
 ### Run
 ```shell
-build\my_app.exe
+build\build_source.exe
 ```
 
