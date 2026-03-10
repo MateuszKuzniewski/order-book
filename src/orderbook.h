@@ -24,6 +24,15 @@ struct order_data
     u32 id;
     side side;
     operation operation;
+
+    bool operator== (const order_data& order) const 
+    {
+        return price == order.price &&
+            quantity == order.quantity &&
+            id == order.id &&
+            side == order.side &&
+            operation == order.operation;
+    }
 };
 
 typedef std::deque<order_data> order_list;
