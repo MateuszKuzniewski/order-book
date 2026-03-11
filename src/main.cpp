@@ -10,9 +10,9 @@
 int main()
 {
     order_book orderbook;
-    const std::string ORDERS_PATH = "../order-book/data/orders.csv";
+    const std::string ordersFilePath = "../order-book/data/orders.csv";
 
-    std::ifstream file(ORDERS_PATH);
+    std::ifstream file(ordersFilePath);
     std::string line;
 
     if (!file.is_open())
