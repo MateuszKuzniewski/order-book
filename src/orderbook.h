@@ -25,7 +25,7 @@ struct order_data
     side side;
     operation operation;
 
-    bool operator== (const order_data& order) const 
+    bool operator==(const order_data& order) const 
     {
         return price == order.price &&
             quantity == order.quantity &&
@@ -57,3 +57,8 @@ struct order_book
     order_map askbook;
     order_index order_index;
 };
+
+bool add_order(order_book& orderbook, const order_data& order);
+u64  match_orders(order_book& orderbook, order_data& order);
+bool cancel_order(order_book& orderbook, order_data& order);
+
