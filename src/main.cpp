@@ -43,7 +43,7 @@ int main()
     print_book(orderbook.bidbook, "BUY ORDERS: ");
     print_book(orderbook.askbook, "SELL ORDERS: ");
 
-    std::cout << "\nSYSTEM: total matched orders: " << matches << "\n\n";
+    std::cout << "\nSYSTEM: total volume traded: " << matches << "\n\n";
     
     return EXIT_SUCCESS;
 }
