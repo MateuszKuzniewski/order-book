@@ -13,9 +13,9 @@ _deps
 CMakeUserPresets.json
 /build/
 build/
-build-app.sh
-build-all.sh
-build-test.sh
+build_app.sh
+build_all.sh
+build_test.sh
 run-test.sh
 
 # Cache
